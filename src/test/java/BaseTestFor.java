@@ -1,14 +1,18 @@
+import entities.Product;
 import managers.DriverManager;
 import managers.PagesManager;
 import managers.PropertiesManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import utils.MyProp;
+import utils.MyScreenshot;
 
 /**
  * @author Sergey Nesterov
  */
-public class BaseTest {
+@ExtendWith(MyScreenshot.class)
+public class BaseTestFor {
     protected static PropertiesManager properties = PropertiesManager.getInstance();
 
     @BeforeEach
@@ -23,7 +27,8 @@ public class BaseTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-//        DriverManager.quit();
+        DriverManager.quit();
         PagesManager.deleteInstance();
+        Product.clearList();
     }
 }

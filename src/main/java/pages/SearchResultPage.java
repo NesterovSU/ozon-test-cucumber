@@ -33,12 +33,14 @@ public class SearchResultPage extends BasePage {
     private WebElement NFCClick;
     @FindBy(xpath = "//aside//*[contains(text(),'Цена')]/..//*[contains(text(),'до')]/../input")
     private WebElement costMax;
+    @FindBy(xpath = "//aside")
+    private WebElement filter;
 
     @FindBy(xpath = "//*[contains(@class,'search-result')]/*/div")
     private List<WebElement> products;
 
     private By name = By.xpath(".//*[contains(@class,'tsBodyL')]"),
-            cost = By.xpath(".//*[contains(@class,'ui-n6')]"),
+            cost = By.xpath(".//div[3]/div"),
             toBasket = By.xpath(".//*[contains(text(),'доставит')]/../..//button"),
             container = By.xpath("//*[contains(@class,'search-result')]");
 

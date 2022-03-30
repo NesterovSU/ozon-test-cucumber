@@ -32,7 +32,7 @@
         <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher -->
         <dependency>
             <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-runner</artifactId>
+            <artifactId>junit-platform-launcher</artifactId>
             <version>1.8.2</version>
             <scope>test</scope>
         </dependency>
@@ -81,7 +81,7 @@
                 <configuration>
                     <testFailureIgnore>true</testFailureIgnore>
                     <argLine>
-                        -Xmx512m
+<!--                        -Xmx512m-->
                         -Dfile.encoding=UTF-8
                         -Dallure.results.directory=${project.build.directory}/reports/allure-results
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"

@@ -4,6 +4,7 @@ import io.qameta.allure.Step;
 import managers.DriverManager;
 import managers.PagesManager;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -61,6 +62,10 @@ public class BasePage {
         );
     }
 
+    public void scrollTo(WebElement we) {
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView()", we);
+    }
+
     public WebElement waitVisio(By by) {
         return waitVisio(driver.findElement(by));
     }
@@ -71,7 +76,6 @@ public class BasePage {
             try {
                 return wait.until(ExpectedConditions.visibilityOf(we));
             } catch (org.openqa.selenium.StaleElementReferenceException ex) {
-                System.out.println("staleException");
             }
             try {
                 Thread.sleep(100);
