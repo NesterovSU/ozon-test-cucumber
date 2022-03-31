@@ -27,7 +27,7 @@ public class BaseTestFor {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        DriverManager.quit();
+//        DriverManager.quit();
         PagesManager.deleteInstance();
         Product.clearList();
     }

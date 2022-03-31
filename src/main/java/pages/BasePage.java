@@ -33,20 +33,23 @@ public class BasePage {
     BasePage() {
         driver = DriverManager.getInstance();
         PageFactory.initElements(driver, this);
-        wait = new WebDriverWait(driver, 5, 100);
+        wait = new WebDriverWait(driver, 10, 100);
 //        wait.ignoring(org.openqa.selenium.StaleElementReferenceException.class);
     }
 
     @Step("Ввести запрос {text} в поле поиска")
-    public void search(String text) {
+    public SearchResultPage search(String text) {
         searchField.click();
         searchField.clear();
         searchField.sendKeys(text);
         searchButton.click();
+        return PagesManager.getInstance().getSearchResultPage();
     }
+
     @Step("Кликнуть на иконку корзины")
     public BasketPage clickBasketIconCount() {
         waitVisio(basketIconCount).click();
+        System.out.println("BasketIconClick");
         return PagesManager.getInstance().getBasketPage();
     }
 
@@ -70,12 +73,23 @@ public class BasePage {
         return waitVisio(driver.findElement(by));
     }
 
+    public boolean isPresentThenClick(WebElement we) {
+        try {
+            we.click();
+            return true;
+        } catch (Exception ex) {
+            System.out.println("isPresentThenClick exception");
+            return false;
+        }
+    }
+
     public WebElement waitVisio(WebElement we) {
-        int timeout = 50; //*0.1 sec
+        int timeout = 5; //*0.1 sec
         do {
             try {
                 return wait.until(ExpectedConditions.visibilityOf(we));
             } catch (org.openqa.selenium.StaleElementReferenceException ex) {
+                System.out.println("stale");
             }
             try {
                 Thread.sleep(100);
