@@ -36,7 +36,6 @@ public class Product {
         products.forEach(p-> str.append(p.toString()));
         str.append("Товар с наибольшей ценой: \n");
         str.append(products.stream().max(Comparator.comparing(Product::getCost)).get());
-        System.out.println(str);
         return str.toString();
     }
 

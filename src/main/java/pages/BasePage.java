@@ -3,6 +3,7 @@ package pages;
 import io.qameta.allure.Step;
 import managers.DriverManager;
 import managers.PagesManager;
+import managers.PropertiesManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -11,6 +12,9 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import utils.MyProp;
+
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -48,8 +52,7 @@ public class BasePage {
 
     @Step("Кликнуть на иконку корзины")
     public BasketPage clickBasketIconCount() {
-        waitVisio(basketIconCount).click();
-        System.out.println("BasketIconClick");
+        basketIconCount.click();
         return PagesManager.getInstance().getBasketPage();
     }
 
@@ -69,20 +72,6 @@ public class BasePage {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView()", we);
     }
 
-    public WebElement waitVisio(By by) {
-        return waitVisio(driver.findElement(by));
-    }
-
-    public boolean isPresentThenClick(WebElement we) {
-        try {
-            we.click();
-            return true;
-        } catch (Exception ex) {
-            System.out.println("isPresentThenClick exception");
-            return false;
-        }
-    }
-
     public WebElement waitVisio(WebElement we) {
         int timeout = 5; //*0.1 sec
         do {
@@ -96,8 +85,27 @@ public class BasePage {
             } catch (InterruptedException e) {
                 return we;
             }
-            timeout--;
-        } while (timeout > 0);
+        } while (--timeout > 0);
         return we;
+    }
+
+    public boolean isPresentThenClick(WebElement we) {
+        By by = By.xpath(".");
+        return isPresentThenClick(we, by);
+    }
+
+    public boolean isPresentThenClick(WebElement we, By by) {
+        try {
+            driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+            we.findElement(by).click();
+            long implWait = Long.parseLong(PropertiesManager.getInstance().get(MyProp.IMPLWAIT));
+            driver.manage().timeouts().implicitlyWait(implWait, TimeUnit.SECONDS);
+            return true;
+        } catch (Exception ex) {
+            System.out.println("isPresentThenClick ex");
+            long implWait = Long.parseLong(PropertiesManager.getInstance().get(MyProp.IMPLWAIT));
+            driver.manage().timeouts().implicitlyWait(implWait, TimeUnit.SECONDS);
+            return false;
+        }
     }
 }

@@ -2,14 +2,12 @@ package pages;
 
 import entities.Product;
 import io.qameta.allure.Step;
-import managers.PagesManager;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
 
@@ -49,10 +47,12 @@ public class BasketPage extends BasePage {
 
     @Step("Проверить присутствуют ли на странице надпись '{text1} {text2}'")
     public BasketPage checkTotalContains(String text1, String text2) {
+        String str = waitVisio(total).getText();
+        System.out.println(str);
         Assertions.assertTrue(
-                waitVisio(total).getText().contains(text1) &&
-                        waitVisio(total).getText().contains(text2),
-                "Отсутствует надпись '" + text1 + text2 + "'");
+                str.contains(text1) &&
+                        str.contains(text2),
+                "Отсутствует надпись '" + text1 + text2 + "(ов)'");
         return this;
     }
 
@@ -61,11 +61,12 @@ public class BasketPage extends BasePage {
         waitVisio(registrationButton);
         for (WebElement item : products) {
             if (item.getText().contains("Доставка Ozon")) continue;
-            scrollTo(item);
             if (item.findElement(this.name).getText().contains(name) &&
                     item.findElement(this.cost).getText().replaceAll("\\D", "")
-                            .contains(String.valueOf(cost)))
+                            .contains(String.valueOf(cost))) {
+                scrollTo(item);
                 return true;
+            }
         }
         return false;
     }
@@ -81,10 +82,10 @@ public class BasketPage extends BasePage {
 
     @Step("Закрыть всплывающее окно")
     public BasketPage closeAdvertising() {
-        new WebDriverWait(driver, 3)
-                .ignoring(TimeoutException.class)
-                .until(ExpectedConditions.visibilityOf(advertising))
-                .click();
+        try {
+            advertising.click();
+        } catch (TimeoutException ex) {
+        }
         return this;
     }
 
@@ -100,7 +101,7 @@ public class BasketPage extends BasePage {
     }
 
     public BasketPage checkProductsInBasket(List<Product> products) {
-        products.forEach(p->Assertions.assertTrue(isProductInBasket(p.getName(), p.getCost()),
+        products.forEach(p -> Assertions.assertTrue(isProductInBasket(p.getName(), p.getCost()),
                 "В корзине отсутствует товар " + p));
         return this;
     }

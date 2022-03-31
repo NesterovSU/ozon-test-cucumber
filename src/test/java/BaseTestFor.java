@@ -18,6 +18,11 @@ public class BaseTestFor {
     @BeforeEach
     void beforeEach() {
         DriverManager.getInstance().get(properties.get(MyProp.HOME_URL));
+        try {
+            Thread.sleep(20000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @AfterEach

@@ -50,9 +50,8 @@ public class SearchResultPage extends BasePage {
 
     private By name = By.xpath(".//*[contains(@class,'tsBodyL')]"),
             cost = By.xpath(".//div[3]/div"),
-            toBasket = By.xpath(".//*[contains(text(),'доставит')]/../..//button"),
+            toBasket = By.xpath(".//*[contains(text(),'доставит')]/../..//*[contains(text(),'В корзину')]"),
             containerResults = By.xpath("//*[contains(@class,'search-result')]");
-
 
     @Step("Добавить брэнд {brand} в фильтр")
     public SearchResultPage setBrand(String brand) {
@@ -66,7 +65,7 @@ public class SearchResultPage extends BasePage {
         return this;
     }
 
-    public SearchResultPage setBrandList(List<String> brands){
+    public SearchResultPage setBrandList(List<String> brands) {
         brands.forEach(b -> PagesManager.getInstance().getSearchResultPage().setBrand(b));
         return this;
     }
@@ -119,15 +118,8 @@ public class SearchResultPage extends BasePage {
     @Step("Добавить продукт в корзину")
     public boolean addToBasket(WebElement we) {
         waitVisio(we);
-        System.out.println("addToBasket");
         String countBefore = getBasketIconCount();
-        try {
-            we.findElement(toBasket).click();
-        } catch (Exception ex) {
-            System.out.println("isPresentThenClick exception");
-            return false;
-        }
-        System.out.println("add ok");
+        if (!isPresentThenClick(we, toBasket)) return false;
         waitUntilBasketIconCountChange(countBefore);
         Product.addProduct(
                 we.findElement(name).getText(),
@@ -147,7 +139,6 @@ public class SearchResultPage extends BasePage {
                 if ((i + 1) % 2 != 0 && !odd) continue;
                 if ((i + 1) % 2 == 0 && !even) continue;
                 scrollTo(products.get(i));
-                System.out.println("scroll to product");
                 if (addToBasket(products.get(i)))
                     if (--quantity == 0) return this;
             }
