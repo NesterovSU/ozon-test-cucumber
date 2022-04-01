@@ -33,7 +33,7 @@ public class BasePage {
     BasePage() {
         driver = DriverManager.getInstance();
         PageFactory.initElements(driver, this);
-        wait = new WebDriverWait(driver, 10, 100);
+        wait = new WebDriverWait(driver, 10);
 //        wait.ignoring(org.openqa.selenium.StaleElementReferenceException.class);
     }
 
@@ -46,12 +46,10 @@ public class BasePage {
         return PagesManager.getInstance().getSearchResultPage();
     }
 
-
     public BasketPage clickBasketIconCount() {
         basketIconCount.click();
         return PagesManager.getInstance().getBasketPage();
     }
-
 
     public String getBasketIconCount() {
         return waitVisio(basketIconCount).getText();

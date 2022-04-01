@@ -78,7 +78,6 @@ public class SearchResultPage extends BasePage {
         return false;
     }
 
-
     public SearchResultPage setHighRating() {
         if (!getHighRating()) waitVisio(highRatingClick).click();
         Assertions.assertTrue(getHighRating(), "Высокий рейтинг не выбран");
@@ -147,5 +146,4 @@ public class SearchResultPage extends BasePage {
         } while (isPresentThenClick(next));
         return this;
     }
-
 }

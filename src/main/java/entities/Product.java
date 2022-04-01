@@ -54,6 +54,6 @@ public class Product {
         return this.getName() + "  --  " + this.getCost() + " руб.\n";
     }
 
-    String name;
-    int cost;
+    private String name;
+    private int cost;
 }

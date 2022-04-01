@@ -56,7 +56,6 @@ public class BasketPage extends BasePage {
         return this;
     }
 
-
     public boolean isProductInBasket(String name, int cost) {
         waitVisio(registrationButton);
         for (WebElement item : products) {
@@ -71,7 +70,6 @@ public class BasketPage extends BasePage {
         return false;
     }
 
-
     public BasketPage deleteAllProducts() {
         String countBefore = getBasketIconCount();
         waitVisio(deleteChecked).click();
@@ -80,7 +78,6 @@ public class BasketPage extends BasePage {
         return this;
     }
 
-
     public BasketPage closeAdvertising() {
         try {
             advertising.click();
@@ -88,7 +85,6 @@ public class BasketPage extends BasePage {
         }
         return this;
     }
-
 
     public boolean isBasketEmpty() {
         try {
@@ -99,7 +95,6 @@ public class BasketPage extends BasePage {
             return false;
         }
     }
-
 
     public BasketPage checkProductsInBasket(List<Product> productList) {
         List<Product> basketList = getProductList();
