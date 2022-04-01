@@ -1,13 +1,19 @@
 package entities;
 
+import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import managers.DriverManager;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Sergey Nesterov
@@ -27,22 +33,24 @@ public class Product {
         return products;
     }
 
-    public static void clearList(){
+    public static void clearList() {
         products.clear();
     }
 
-    @Attachment
-    public static String attachInfo(){
+
+    public static void attachInfo() {
         StringBuilder str = new StringBuilder();
         str.append("Списик добавленных товаров:\n");
-        products.forEach(p-> str.append(p.toString()));
+        products.forEach(p -> str.append(p.toString()));
         str.append("Товар с наибольшей ценой: \n");
-        str.append(products.stream().max(Comparator.comparing(Product::getCost)).get());
-        return str.toString();
+        Optional<Product> optionalProduct = products.stream().max(Comparator.comparing(Product::getCost));
+        str.append(optionalProduct.isPresent() ? optionalProduct.get() : "");
+        Allure.getLifecycle().addAttachment("products", "text/plain", ".txt",
+                str.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return this.getName() + "  --  " + this.getCost() + " руб.\n";
     }
 

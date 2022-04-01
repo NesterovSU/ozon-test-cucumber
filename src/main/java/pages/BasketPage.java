@@ -1,7 +1,6 @@
 package pages;
 
 import entities.Product;
-import io.qameta.allure.Step;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -47,17 +46,17 @@ public class BasketPage extends BasePage {
     @FindBy(xpath = "//span[text()='Добавить компанию']/../../../../../div[3]//button")
     private WebElement advertising;
 
-    @Step("Проверить присутствует ли на странице надпись '{text1} {text2}(ов)'")
+
     public BasketPage checkTotalContains(String text1, String text2) {
         String str = waitVisio(total).getText();
         Assertions.assertTrue(
                 str.contains(text1) &&
                         str.contains(text2),
-                "Отсутствует надпись '" + text1 +" "+ text2 + "(ов)'");
+                "Отсутствует надпись '" + text1 + " " + text2 + "(ов)'");
         return this;
     }
 
-    @Step("Проверить присутствуют ли продукт {name} с ценой {cost}")
+
     public boolean isProductInBasket(String name, int cost) {
         waitVisio(registrationButton);
         for (WebElement item : products) {
@@ -72,7 +71,7 @@ public class BasketPage extends BasePage {
         return false;
     }
 
-    @Step("Удалить из корзины все продукты")
+
     public BasketPage deleteAllProducts() {
         String countBefore = getBasketIconCount();
         waitVisio(deleteChecked).click();
@@ -81,7 +80,7 @@ public class BasketPage extends BasePage {
         return this;
     }
 
-    @Step("Закрыть всплывающее окно")
+
     public BasketPage closeAdvertising() {
         try {
             advertising.click();
@@ -90,7 +89,7 @@ public class BasketPage extends BasePage {
         return this;
     }
 
-    @Step("Дождаться надпись 'Корзина пуста'")
+
     public boolean isBasketEmpty() {
         try {
             wait.until(ExpectedConditions.visibilityOf(basketEmpty));
@@ -101,7 +100,7 @@ public class BasketPage extends BasePage {
         }
     }
 
-    @Step("Проверить содержиться ли список продуктов в корзине")
+
     public BasketPage checkProductsInBasket(List<Product> productList) {
         List<Product> basketList = getProductList();
         productList.forEach(p -> Assertions.assertTrue(basketList.contains(p),

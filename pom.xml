@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.nesterov</groupId>
-    <artifactId>ozon-test</artifactId>
+    <artifactId>ozon-test-cucumber</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -32,22 +32,27 @@
         <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher -->
         <dependency>
             <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
+            <artifactId>junit-platform-runner</artifactId>
             <version>1.8.2</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-java-commons -->
+        <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-java -->
         <dependency>
-            <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-java-commons</artifactId>
-            <version>2.13.6</version>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>5.7.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-junit5 -->
+        <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-junit -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>5.7.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-cucumber5-jvm -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-junit5</artifactId>
-            <version>2.13.6</version>
-            <scope>test</scope>
+            <artifactId>allure-cucumber5-jvm</artifactId>
+            <version>2.15.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
@@ -80,6 +85,7 @@
                 <version>3.0.0-M5</version>
                 <configuration>
                     <testFailureIgnore>true</testFailureIgnore>
+                    <includes>**/*CucumberRunner.java</includes>
                     <argLine>
 <!--                        -Xmx512m-->
                         -Dfile.encoding=UTF-8

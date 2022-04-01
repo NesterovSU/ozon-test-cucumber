@@ -1,13 +1,9 @@
 package pages;
 
-import io.qameta.allure.Step;
 import managers.DriverManager;
 import managers.PagesManager;
 import managers.PropertiesManager;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -41,7 +37,7 @@ public class BasePage {
 //        wait.ignoring(org.openqa.selenium.StaleElementReferenceException.class);
     }
 
-    @Step("Ввести запрос {text} в поле поиска")
+
     public SearchResultPage search(String text) {
         searchField.click();
         searchField.clear();
@@ -50,18 +46,17 @@ public class BasePage {
         return PagesManager.getInstance().getSearchResultPage();
     }
 
-    @Step("Кликнуть на иконку корзины")
+
     public BasketPage clickBasketIconCount() {
         basketIconCount.click();
         return PagesManager.getInstance().getBasketPage();
     }
 
-    @Step("Вернуть количество из иконки корзины")
+
     public String getBasketIconCount() {
         return waitVisio(basketIconCount).getText();
     }
 
-    @Step("Подождать изменения количества в иконке корзины")
     public void waitUntilBasketIconCountChange(String countBefore) {
         wait.until(ExpectedConditions.not(
                 ExpectedConditions.textToBePresentInElement(basketIconCount, countBefore))
@@ -95,7 +90,7 @@ public class BasePage {
             long implWait = Long.parseLong(PropertiesManager.getInstance().get(MyProp.IMPLWAIT));
             driver.manage().timeouts().implicitlyWait(implWait, TimeUnit.SECONDS);
             return true;
-        } catch (Exception ex) {
+        } catch (NoSuchElementException ex) {
             long implWait = Long.parseLong(PropertiesManager.getInstance().get(MyProp.IMPLWAIT));
             driver.manage().timeouts().implicitlyWait(implWait, TimeUnit.SECONDS);
             return false;

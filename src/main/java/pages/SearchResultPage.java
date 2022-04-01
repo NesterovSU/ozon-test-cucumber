@@ -1,7 +1,6 @@
 package pages;
 
 import entities.Product;
-import io.qameta.allure.Step;
 import managers.PagesManager;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
@@ -52,7 +51,7 @@ public class SearchResultPage extends BasePage {
             toBasket = By.xpath(".//*[contains(text(),'доставит')]/../..//*[contains(text(),'В корзину')]"),
             containerResults = By.xpath("//*[contains(@class,'search-result')]");
 
-    @Step("Добавить брэнд {brand} в фильтр")
+
     public SearchResultPage setBrand(String brand) {
         waitVisio(brandsOpen).click();
         waitVisio(brandSearch).click();
@@ -69,7 +68,7 @@ public class SearchResultPage extends BasePage {
         return this;
     }
 
-    @Step("Проверить добавлен ли брэнд {brand} в фильтр")
+
     public boolean isBrandSelected(String brand) {
         waitVisio(brandsOpen);
         for (WebElement item : brandList) {
@@ -80,7 +79,6 @@ public class SearchResultPage extends BasePage {
     }
 
 
-    @Step("Установить чекбокс 'Высокий рейтинг'")
     public SearchResultPage setHighRating() {
         if (!getHighRating()) waitVisio(highRatingClick).click();
         Assertions.assertTrue(getHighRating(), "Высокий рейтинг не выбран");
@@ -91,7 +89,6 @@ public class SearchResultPage extends BasePage {
         return waitVisio(highRatingStatus).isSelected();
     }
 
-    @Step("Установить чекбокс 'NFC'")
     public SearchResultPage setNFC() {
         if (!getNFC()) waitVisio(NFCClick).click();
         Assertions.assertTrue(getNFC(), "NFC не выбран");
@@ -102,7 +99,7 @@ public class SearchResultPage extends BasePage {
         return waitVisio(NFCStatus).isSelected();
     }
 
-    @Step("Установить максимальную стоимость {cost}")
+
     public SearchResultPage setCostMax(int cost) {
         waitVisio(costMax).click();
         costMax.sendKeys(Keys.chord(Keys.CONTROL, "a"), String.valueOf(cost), Keys.ENTER);
@@ -114,7 +111,7 @@ public class SearchResultPage extends BasePage {
         return Integer.parseInt(waitVisio(costMax).getAttribute("value").replaceAll("\\D", ""));
     }
 
-    @Step("Добавить продукт в корзину")
+
     public boolean addToBasket(WebElement we) {
         waitVisio(we);
         String countBefore = getBasketIconCount();
@@ -130,13 +127,19 @@ public class SearchResultPage extends BasePage {
         return addProductsToBasket(-1, even, odd);
     }
 
-    @Step("Добавить продукты в корзину кол-во = {quantity}, четные = {even}, нечетные = {odd}")
+    /**
+     *
+     * @param quantity ограничение по количеству добавляемых продуктов, -1 - без ограничения
+     * @param even добавлять четные продукты
+     * @param odd добавлять нечетные продукты
+     * @return экземпляр этой страницы
+     */
     public SearchResultPage addProductsToBasket(int quantity, boolean even, boolean odd) {
         do {
             waitVisio(driver.findElement(containerResults));
             for (int i = 0; i < products.size(); i++) {
-                if ((i + 1) % 2 != 0 && !odd) continue;
-                if ((i + 1) % 2 == 0 && !even) continue;
+                if ((i + 1) % 2 != 0 && !odd) continue; //нечетное пропускаем
+                if ((i + 1) % 2 == 0 && !even) continue; //четное пропускаем
                 scrollTo(products.get(i));
                 if (addToBasket(products.get(i)))
                     if (--quantity == 0) return this;
