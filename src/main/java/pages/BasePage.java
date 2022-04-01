@@ -77,14 +77,8 @@ public class BasePage {
         do {
             try {
                 return wait.until(ExpectedConditions.visibilityOf(we));
-            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
-                System.out.println("stale");
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                return we;
-            }
+            } catch (org.openqa.selenium.StaleElementReferenceException ex) { }
+            mySleep(100);
         } while (--timeout > 0);
         return we;
     }
@@ -102,10 +96,17 @@ public class BasePage {
             driver.manage().timeouts().implicitlyWait(implWait, TimeUnit.SECONDS);
             return true;
         } catch (Exception ex) {
-            System.out.println("isPresentThenClick ex");
             long implWait = Long.parseLong(PropertiesManager.getInstance().get(MyProp.IMPLWAIT));
             driver.manage().timeouts().implicitlyWait(implWait, TimeUnit.SECONDS);
             return false;
+        }
+    }
+
+    public void mySleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

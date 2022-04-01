@@ -41,15 +41,14 @@ public class SearchResultPage extends BasePage {
     @FindBy(xpath = BRAND + "//a")
     private List<WebElement> brandList;
     private By checkBox = By.xpath(".//input");
+    @FindBy(xpath = "//*[contains(text(),'Дальше')]")
+    private WebElement next;
 
     @FindBy(xpath = "//*[contains(@class,'search-result')][1]/div/div/div/..")
     private List<WebElement> products;
 
-    @FindBy(xpath = "//*[contains(text(),'Дальше')]")
-    private WebElement next;
-
     private By name = By.xpath(".//*[contains(@class,'tsBodyL')]"),
-            cost = By.xpath(".//div[3]/div"),
+            cost = By.xpath("./div[3]//*[contains(text(),'₽') and not(contains(text(),'−'))][1]"),
             toBasket = By.xpath(".//*[contains(text(),'доставит')]/../..//*[contains(text(),'В корзину')]"),
             containerResults = By.xpath("//*[contains(@class,'search-result')]");
 
@@ -70,7 +69,7 @@ public class SearchResultPage extends BasePage {
         return this;
     }
 
-    @Step("Проверка добавлен ли брэнд {brand} в фильтр")
+    @Step("Проверить добавлен ли брэнд {brand} в фильтр")
     public boolean isBrandSelected(String brand) {
         waitVisio(brandsOpen);
         for (WebElement item : brandList) {
@@ -131,7 +130,7 @@ public class SearchResultPage extends BasePage {
         return addProductsToBasket(-1, even, odd);
     }
 
-    @Step("Добавить продукты в корзину кол-во = {quantity}, четные = {even} нечетные = {odd}")
+    @Step("Добавить продукты в корзину кол-во = {quantity}, четные = {even}, нечетные = {odd}")
     public SearchResultPage addProductsToBasket(int quantity, boolean even, boolean odd) {
         do {
             waitVisio(driver.findElement(containerResults));

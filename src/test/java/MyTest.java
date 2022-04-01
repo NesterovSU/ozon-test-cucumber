@@ -38,6 +38,7 @@ public class MyTest extends BaseTestFor {
     }
 
     @Test
+    @DisplayName("Тест добавления беспроводных наушников в корзину")
     void test2() {
         boolean even = false;
         boolean odd = true;

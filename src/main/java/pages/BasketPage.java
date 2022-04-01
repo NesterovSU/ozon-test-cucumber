@@ -4,11 +4,13 @@ import entities.Product;
 import io.qameta.allure.Step;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,14 +47,13 @@ public class BasketPage extends BasePage {
     @FindBy(xpath = "//span[text()='Добавить компанию']/../../../../../div[3]//button")
     private WebElement advertising;
 
-    @Step("Проверить присутствуют ли на странице надпись '{text1} {text2}'")
+    @Step("Проверить присутствует ли на странице надпись '{text1} {text2}(ов)'")
     public BasketPage checkTotalContains(String text1, String text2) {
         String str = waitVisio(total).getText();
-        System.out.println(str);
         Assertions.assertTrue(
                 str.contains(text1) &&
                         str.contains(text2),
-                "Отсутствует надпись '" + text1 + text2 + "(ов)'");
+                "Отсутствует надпись '" + text1 +" "+ text2 + "(ов)'");
         return this;
     }
 
@@ -84,7 +85,7 @@ public class BasketPage extends BasePage {
     public BasketPage closeAdvertising() {
         try {
             advertising.click();
-        } catch (TimeoutException ex) {
+        } catch (NoSuchElementException ex) {
         }
         return this;
     }
@@ -100,9 +101,24 @@ public class BasketPage extends BasePage {
         }
     }
 
-    public BasketPage checkProductsInBasket(List<Product> products) {
-        products.forEach(p -> Assertions.assertTrue(isProductInBasket(p.getName(), p.getCost()),
-                "В корзине отсутствует товар " + p));
+    @Step("Проверить содержиться ли список продуктов в корзине")
+    public BasketPage checkProductsInBasket(List<Product> productList) {
+        List<Product> basketList = getProductList();
+        productList.forEach(p -> Assertions.assertTrue(basketList.contains(p),
+                "В корзине отсутствует " + p));
         return this;
+    }
+
+    public List<Product> getProductList() {
+        waitVisio(registrationButton);
+        List<Product> basketList = new ArrayList<>();
+        for (WebElement item : products) {
+            if (item.getText().contains("Доставка")) continue;
+            scrollTo(item);
+            basketList.add(new Product(
+                    item.findElement(name).getText(),
+                    Integer.parseInt(item.findElement(cost).getText().replaceAll("\\D", ""))));
+        }
+        return basketList;
     }
 }

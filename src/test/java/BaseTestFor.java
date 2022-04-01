@@ -18,8 +18,9 @@ public class BaseTestFor {
     @BeforeEach
     void beforeEach() {
         DriverManager.getInstance().get(properties.get(MyProp.HOME_URL));
+//       ожидание, чтобы поменять локацию на 'Москва'
         try {
-            Thread.sleep(20000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -27,12 +28,7 @@ public class BaseTestFor {
 
     @AfterEach
     void afterEach() {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-//        DriverManager.quit();
+        DriverManager.quit();
         PagesManager.deleteInstance();
         Product.clearList();
     }

@@ -2,6 +2,7 @@ package entities;
 
 import io.qameta.allure.Attachment;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
  */
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Product {
 
     private static List<Product> products = new ArrayList<>();
