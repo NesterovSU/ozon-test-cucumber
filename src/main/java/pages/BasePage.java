@@ -66,12 +66,18 @@ public class BasePage {
     }
 
     public WebElement waitVisio(WebElement we) {
+        By by = By.xpath(".");
+        return waitVisio(we, by);
+    }
+    public WebElement waitVisio(WebElement we, By by) {
         int timeout = 5; //*0.1 sec
         do {
             try {
-                return wait.until(ExpectedConditions.visibilityOf(we));
-            } catch (org.openqa.selenium.StaleElementReferenceException ex) { }
-            mySleep(100);
+                return wait.until(ExpectedConditions.visibilityOf(we.findElement(by)));
+            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
+                mySleep(100);
+                System.out.println("Stale");
+            }
         } while (--timeout > 0);
         return we;
     }

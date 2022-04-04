@@ -19,14 +19,14 @@ public class SearchResultPageStep {
         searchResultPage.setCostMax(costMax);
     }
 
-    @И("^Установить высокий рейтинг$")
-    public void setHighRating() {
-        searchResultPage.setHighRating();
+    @И("^Установить свитчбокс '([^\"]+)'$")
+    public void setSwitchBox(String name) {
+        searchResultPage.setSwitchBox(name);
     }
 
-    @И("^Установить с функцией NFC$")
-    public void setNFC() {
-        searchResultPage.setNFC();
+    @И("^Установить чекбокс '([^\"]+)'$")
+    public void setCheckBox(String name) {
+        searchResultPage.setCheckBox(name);
     }
 
     @И("^Выбрать брэнды$")

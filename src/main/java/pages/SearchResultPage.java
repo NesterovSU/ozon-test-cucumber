@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindAll;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -16,15 +17,22 @@ import java.util.List;
  */
 public class SearchResultPage extends BasePage {
 
-    @FindBy(xpath = "//aside//*[contains(text(),'Высокий рейтинг')]/../../../input")
-    private WebElement highRatingStatus;
-    @FindBy(xpath = "//aside//*[contains(text(),'Высокий рейтинг')]/../../../div")
-    private WebElement highRatingClick;
+    @FindAll({
+            @FindBy(xpath = "//aside//*[contains(@value,'Высокий рейтинг')]"),
+    })
+    private List<WebElement> switchBoxList;
+    private By switchBoxStatus = By.xpath(".//input"),
+            switchBoxClick = By.xpath(".//div[1]");
 
-    @FindBy(xpath = "//aside//*[contains(text(),'NFC')]/../../input")
-    private WebElement NFCStatus;
-    @FindBy(xpath = "//aside//*[contains(text(),'NFC')]/../../div")
-    private WebElement NFCClick;
+    @FindAll({
+            @FindBy(xpath = "//aside//*[contains(text(),'NFC')]")
+    })
+    private List<WebElement> chekBoxList;
+    private By checkBoxStatus = By.xpath("./../../input"),
+            checkBoxClick = By.xpath("./../../div");
+
+    @FindBy(xpath = "//aside//*[contains(text(),'Все фильтры')]")
+    private WebElement allFilters;
 
     @FindBy(xpath = "//aside//*[contains(text(),'Цена')]/..//*[contains(text(),'до')]/../input")
     private WebElement costMax;
@@ -78,26 +86,52 @@ public class SearchResultPage extends BasePage {
         return false;
     }
 
-    public SearchResultPage setHighRating() {
-        if (!getHighRating()) waitVisio(highRatingClick).click();
-        Assertions.assertTrue(getHighRating(), "Высокий рейтинг не выбран");
+    public SearchResultPage setCheckBox(String name) {
+        waitVisio(allFilters);
+        for (WebElement we : chekBoxList) {
+            if (!we.getText().contains(name)) continue;
+            if (!getCheckBox(name)) waitVisio(we, checkBoxClick).click();
+            {
+                Assertions.assertTrue(getCheckBox(name), "Чекбокс '" + name + "' не выбран");
+                return this;
+            }
+        }
+        Assertions.fail("Отсутствует чекбокс '" + name + "'");
         return this;
     }
 
-    public boolean getHighRating() {
-        return waitVisio(highRatingStatus).isSelected();
+    public boolean getCheckBox(String name) {
+        waitVisio(allFilters);
+        for (WebElement we : chekBoxList) {
+            return waitVisio(we, checkBoxStatus).isSelected();
+        }
+        Assertions.fail("Отсутствует чекбокс '" + name + "'");
+        return false;
     }
 
-    public SearchResultPage setNFC() {
-        if (!getNFC()) waitVisio(NFCClick).click();
-        Assertions.assertTrue(getNFC(), "NFC не выбран");
+
+    public SearchResultPage setSwitchBox(String name) {
+        waitVisio(allFilters);
+        for (WebElement we : switchBoxList) {
+            if (!we.getText().contains(name)) continue;
+            if (!getSwitchBox(name)) waitVisio(we, switchBoxClick).click();
+            {
+                Assertions.assertTrue(getSwitchBox(name), "Cвитчбокс '" + name + "' не выбран");
+                return this;
+            }
+        }
+        Assertions.fail("Отсутствует свитчбокс '" + name + "'");
         return this;
     }
 
-    public boolean getNFC() {
-        return waitVisio(NFCStatus).isSelected();
+    public boolean getSwitchBox(String name) {
+        waitVisio(allFilters);
+        for (WebElement we : switchBoxList) {
+            return waitVisio(we, switchBoxStatus).isSelected();
+        }
+        Assertions.fail("Отсутствует свитчбокс '" + name + "'");
+        return false;
     }
-
 
     public SearchResultPage setCostMax(int cost) {
         waitVisio(costMax).click();
@@ -127,10 +161,9 @@ public class SearchResultPage extends BasePage {
     }
 
     /**
-     *
      * @param quantity ограничение по количеству добавляемых продуктов, -1 - без ограничения
-     * @param even добавлять четные продукты
-     * @param odd добавлять нечетные продукты
+     * @param even     добавлять четные продукты
+     * @param odd      добавлять нечетные продукты
      * @return экземпляр этой страницы
      */
     public SearchResultPage addProductsToBasket(int quantity, boolean even, boolean odd) {
