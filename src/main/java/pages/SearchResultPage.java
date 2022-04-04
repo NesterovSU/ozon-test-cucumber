@@ -34,8 +34,12 @@ public class SearchResultPage extends BasePage {
     @FindBy(xpath = "//aside//*[contains(text(),'Все фильтры')]")
     private WebElement allFilters;
 
-    @FindBy(xpath = "//aside//*[contains(text(),'Цена')]/..//*[contains(text(),'до')]/../input")
-    private WebElement costMax;
+    @FindAll({
+            @FindBy(xpath = "//aside//*[contains(text(),'Цена')]/..")
+    })
+    private List<WebElement> fields;
+    private By to = By.xpath(".//*[contains(text(),'до')]/../input"),
+            from = By.xpath(".//*[contains(text(),'от')]/../input");
 
     @FindBy(xpath = "//aside")
     private WebElement filter;
@@ -133,15 +137,28 @@ public class SearchResultPage extends BasePage {
         return false;
     }
 
-    public SearchResultPage setCostMax(int cost) {
-        waitVisio(costMax).click();
-        costMax.sendKeys(Keys.chord(Keys.CONTROL, "a"), String.valueOf(cost), Keys.ENTER);
-        Assertions.assertEquals(cost, getCostMax(), "Неправильно установлена максимальная цена");
+
+    public SearchResultPage setFieldTo(String name, String text) {
+        waitVisio(allFilters);
+        for (WebElement we : fields) {
+            if (!we.getText().contains(name)) continue;
+            waitVisio(we, to).click();
+            we.findElement(to).sendKeys(Keys.chord(Keys.CONTROL, "a"), text, Keys.ENTER);
+            Assertions.assertEquals(text, getFieldTo(name), "Неверно значение поля '" + name + "' от");
+            return this;
+        }
+        Assertions.fail("Отсутствует  поле '" + name + "' от");
         return this;
     }
 
-    public int getCostMax() {
-        return Integer.parseInt(waitVisio(costMax).getAttribute("value").replaceAll("\\D", ""));
+    public String getFieldTo(String name) {
+        waitVisio(allFilters);
+        for (WebElement we : fields) {
+            if (!we.getText().contains(name)) continue;
+            return waitVisio(we, to).getAttribute("value").replaceAll("\\D", "");
+        }
+        Assertions.fail("Отсутствует поле '" + name + "' от");
+        return "";
     }
 
 

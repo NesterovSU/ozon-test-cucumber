@@ -14,9 +14,9 @@ public class SearchResultPageStep {
 
     private SearchResultPage searchResultPage = PagesManager.getInstance().getSearchResultPage();
 
-    @И("^Установить максимальную цену (\\d+)$")
-    public void setCostMax(int costMax) {
-        searchResultPage.setCostMax(costMax);
+    @И("^Установить '([^\"]+)' до (\\d+)$")
+    public void setFieldTo(String name, int number) {
+        searchResultPage.setFieldTo(name,String.valueOf(number));
     }
 
     @И("^Установить свитчбокс '([^\"]+)'$")
