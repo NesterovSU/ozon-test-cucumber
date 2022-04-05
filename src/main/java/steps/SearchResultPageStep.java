@@ -45,7 +45,7 @@ public class SearchResultPageStep {
         }
     }
 
-    @И("^Добавить в корзину (четные|нечетные|все) результаты$")
+    @И("^Добавить в корзину все (четные|нечетные|все) результаты$")
     public void addProductsToBasket(String param) {
         addProductsToBasket(param.replace("все", "первые"), -1);
     }

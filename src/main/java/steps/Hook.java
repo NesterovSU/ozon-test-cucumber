@@ -22,7 +22,7 @@ public class Hook {
 
     @After(value = "@myTag")
     public void closeBrowserWindow() {
-//        DriverManager.quit();
+        DriversManager.quit();
         PagesManager.deleteInstance();
         Product.attachInfo();
         Product.clearList();
