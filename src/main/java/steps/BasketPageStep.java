@@ -16,7 +16,7 @@ public class BasketPageStep {
         basketPage.closeAdvertising();
     }
 
-    @И("^Проверить присутствует ли на странице корзины надпись 'Ваша корзина  N товаров'$")
+    @И("^Проверить присутствует ли на странице корзины надпись 'Ваша корзина N товаров'$")
     public void checkTotalContains() {
         basketPage.checkTotalContains("Ваша корзина", Product.getProducts().size() + " товар");
     }

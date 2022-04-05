@@ -1,6 +1,6 @@
 package pages;
 
-import managers.DriverManager;
+import managers.DriversManager;
 import managers.PagesManager;
 import managers.PropertiesManager;
 import org.openqa.selenium.*;
@@ -31,9 +31,9 @@ public class BasePage {
     protected WebDriverWait wait;
 
     BasePage() {
-        driver = DriverManager.getInstance();
+        driver = DriversManager.getInstance();
         PageFactory.initElements(driver, this);
-        wait = new WebDriverWait(driver, 10);
+        wait = new WebDriverWait(driver, 15);
 //        wait.ignoring(org.openqa.selenium.StaleElementReferenceException.class);
     }
 
@@ -43,7 +43,7 @@ public class BasePage {
         searchField.clear();
         searchField.sendKeys(text);
         searchButton.click();
-        return PagesManager.getInstance().getSearchResultPage();
+        return PagesManager.getInstance().getSearchResultPage().isResultHeaderContains(text);
     }
 
     public BasketPage clickBasketIconCount() {
@@ -69,14 +69,20 @@ public class BasePage {
         By by = By.xpath(".");
         return waitVisio(we, by);
     }
+
+    /**
+     * Ждать отображение элемента на странице, игнорируя StaleElementReferenceException
+     * @param we блок
+     * @param by элемент
+     * @return элемент
+     */
     public WebElement waitVisio(WebElement we, By by) {
-        int timeout = 5; //*0.1 sec
+        int timeout = 10; //*0.1 sec
         do {
             try {
                 return wait.until(ExpectedConditions.visibilityOf(we.findElement(by)));
             } catch (org.openqa.selenium.StaleElementReferenceException ex) {
                 mySleep(100);
-                System.out.println("Stale");
             }
         } while (--timeout > 0);
         return we;
@@ -87,9 +93,15 @@ public class BasePage {
         return isPresentThenClick(we, by);
     }
 
+    /**
+     * Нажать на элемент, если он присутствует на странице, без ожидания
+     * @param we блок
+     * @param by элемент внутри блока
+     * @return true - если элемент найден, false - если не найден
+     */
     public boolean isPresentThenClick(WebElement we, By by) {
         try {
-            driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+            driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
             we.findElement(by).click();
             long implWait = Long.parseLong(PropertiesManager.getInstance().get(MyProp.IMPLWAIT));
             driver.manage().timeouts().implicitlyWait(implWait, TimeUnit.SECONDS);

@@ -14,9 +14,9 @@ public class SearchResultPageStep {
 
     private SearchResultPage searchResultPage = PagesManager.getInstance().getSearchResultPage();
 
-    @И("^Установить '([^\"]+)' до (\\d+)$")
-    public void setFieldTo(String name, int number) {
-        searchResultPage.setFieldTo(name,String.valueOf(number));
+    @И("^Установить '([^\"]+)' (до|от) (\\d+)$")
+    public void setFieldTo(String name, String fromTo, int number) {
+        searchResultPage.setField(name, fromTo, String.valueOf(number));
     }
 
     @И("^Установить свитчбокс '([^\"]+)'$")
@@ -24,14 +24,14 @@ public class SearchResultPageStep {
         searchResultPage.setSwitchBox(name);
     }
 
-    @И("^Установить чекбокс '([^\"]+)'$")
-    public void setCheckBox(String name) {
-        searchResultPage.setCheckBox(name);
+    @И("^Установить в блоке '([^\"]+)' чекбокс '([^\"]+)'$")
+    public void setCheckBox(String block, String name) {
+        searchResultPage.setCheckBox(block, name);
     }
 
     @И("^Выбрать брэнды$")
     public void setBrandList(List<String> brands) {
-        searchResultPage.setBrandList(brands);
+        brands.forEach(b->setCheckBox("Бренды", b));
     }
 
     @И("^Добавить в корзину (четные|нечетные|первые) (\\d+) результатов$")
@@ -40,14 +40,14 @@ public class SearchResultPageStep {
             searchResultPage.addProductsToBasket(quantity, true, false);
         } else if (param.equals("нечетные")) {
             searchResultPage.addProductsToBasket(quantity, false, true);
-        } else {
+        } else if (param.equals("первые")) {
             searchResultPage.addProductsToBasket(quantity, true, true);
         }
     }
 
     @И("^Добавить в корзину (четные|нечетные|все) результаты$")
     public void addProductsToBasket(String param) {
-        addProductsToBasket(param, -1);
+        addProductsToBasket(param.replace("все", "первые"), -1);
     }
 
     @И("^Перейти в корзину$")

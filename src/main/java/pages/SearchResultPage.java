@@ -1,124 +1,116 @@
 package pages;
 
 import entities.Product;
-import managers.PagesManager;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindAll;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
+
+import static java.lang.String.format;
 
 /**
  * @author Sergey Nesterov
  */
 public class SearchResultPage extends BasePage {
 
-    @FindAll({
-            @FindBy(xpath = "//aside//*[contains(@value,'Высокий рейтинг')]"),
-    })
-    private List<WebElement> switchBoxList;
+    @FindBy(xpath = "//*[@data-widget='fulltextResultsHeader']")
+    private WebElement resultHeader;
+
+    @FindBy(xpath = "//aside/*[contains(@class,'filter-block')]")
+    private List<WebElement> filterBlocks;
     private By switchBoxStatus = By.xpath(".//input"),
-            switchBoxClick = By.xpath(".//div[1]");
+            switchBoxClick = By.xpath(".//div[1]"),
+            seeAll = By.xpath(".//*[contains(text(),'Посмотреть все')]"),
+            to = By.xpath(".//*[contains(text(),'до')]/../input"),
+            from = By.xpath(".//*[contains(text(),'от')]/../input"),
+            blockSearch = By.xpath(".//input[@type='text']"),
+            firstInBlockList = By.xpath(".//a");
 
-    @FindAll({
-            @FindBy(xpath = "//aside//*[contains(text(),'NFC')]")
-    })
-    private List<WebElement> chekBoxList;
-    private By checkBoxStatus = By.xpath("./../../input"),
-            checkBoxClick = By.xpath("./../../div");
+    private String checkBoxStatus = ".//*[contains(text(),'%s')]/../../input",
+            checkBoxClick = ".//*[contains(text(),'%s')]/../../div[1]";
 
-    @FindBy(xpath = "//aside//*[contains(text(),'Все фильтры')]")
-    private WebElement allFilters;
+    @FindBy(xpath = "//*[contains(text(),'Не нашли, что искали?')]")
+    private WebElement container;
 
-    @FindAll({
-            @FindBy(xpath = "//aside//*[contains(text(),'Цена')]/..")
-    })
-    private List<WebElement> fields;
-    private By to = By.xpath(".//*[contains(text(),'до')]/../input"),
-            from = By.xpath(".//*[contains(text(),'от')]/../input");
-
-    @FindBy(xpath = "//aside")
+    @FindBy(xpath = "//*[@data-widget='searchResultsFilters']")
     private WebElement filter;
 
-    private final String BRAND = "//*[@data-widget='searchResultsFilters']//*[contains(text(),'Бренды')]/..";
-    @FindBy(xpath = BRAND + "//*[contains(text(),'Посмотреть все')]")
-    private WebElement brandsOpen;
-    @FindBy(xpath = BRAND + "//input[@type='text']")
-    private WebElement brandSearch;
-    @FindBy(xpath = BRAND + "//a")
-    private List<WebElement> brandList;
-    private By checkBox = By.xpath(".//input");
     @FindBy(xpath = "//*[contains(text(),'Дальше')]")
     private WebElement next;
 
-    @FindBy(xpath = "//*[contains(@class,'search-result')][1]/div/div/div/..")
+    @FindBy(xpath = "//*[contains(@class,'search-result')][1]/div/div")
     private List<WebElement> products;
-
     private By name = By.xpath(".//*[contains(@class,'tsBodyL')]"),
             cost = By.xpath("./div[3]//*[contains(text(),'₽') and not(contains(text(),'−'))][1]"),
-            toBasket = By.xpath(".//*[contains(text(),'доставит')]/../..//*[contains(text(),'В корзину')]"),
-            containerResults = By.xpath("//*[contains(@class,'search-result')]");
+            toBasket = By.xpath(".//*[contains(text(),'доставит')]/../..//*[contains(text(),'В корзину')]");
 
-
-    public SearchResultPage setBrand(String brand) {
-        waitVisio(brandsOpen).click();
-        waitVisio(brandSearch).click();
-        brandSearch.clear();
-        brandSearch.sendKeys(brand);
-        wait.until(ExpectedConditions.textToBePresentInElement(brandList.get(0), brand));
-        brandList.get(0).click();
-        Assertions.assertTrue(isBrandSelected(brand), "Не выбран брэнд в фильтре - " + brand);
+    public SearchResultPage isResultHeaderContains(String text) {
+        Assertions.assertTrue(resultHeader.getText().contains(text), "Неправильно выполнен поиск '" + text + '"');
         return this;
     }
 
-    public SearchResultPage setBrandList(List<String> brands) {
-        brands.forEach(b -> PagesManager.getInstance().getSearchResultPage().setBrand(b));
-        return this;
-    }
-
-
-    public boolean isBrandSelected(String brand) {
-        waitVisio(brandsOpen);
-        for (WebElement item : brandList) {
-            if (item.getText().contains(brand))
-                return item.findElement(checkBox).isSelected();
+    /**
+     * Установить чекбокс в блоке
+     *
+     * @param block название блока
+     * @param name  название чекбокса
+     * @return страницу поиска
+     */
+    public SearchResultPage setCheckBox(String block, String name) {
+        waitVisio(filter);
+        if (getCheckBoxIfPresent(block, name)) return this;
+        for (WebElement we : filterBlocks) {
+            if (!we.getText().contains(block)) continue;
+            if (!isPresentThenClick(we, seeAll)) {
+                we.findElement(By.xpath(format(checkBoxClick, name))).click();
+            } else {                  //если блок соделжит раскрывающийся список
+                WebElement searchInput = waitVisio(we, blockSearch);
+                searchInput.click();
+                searchInput.clear();
+                searchInput.sendKeys(name);
+                wait.until(ExpectedConditions.textToBePresentInElement(we.findElement(firstInBlockList), name));
+                we.findElement(firstInBlockList).click();
+                waitVisio(we, seeAll);
+            }
+            Assertions.assertTrue(getCheckBoxIfPresent(block, name), "Чекбокс '" + name + " в блоке " + block + "' не выбран");
+            return this;
         }
-        return false;
+        Assertions.fail("Отсутствует блок '" + block + "' в фильтре");
+        return this;
     }
 
-    public SearchResultPage setCheckBox(String name) {
-        waitVisio(allFilters);
-        for (WebElement we : chekBoxList) {
-            if (!we.getText().contains(name)) continue;
-            if (!getCheckBox(name)) waitVisio(we, checkBoxClick).click();
-            {
-                Assertions.assertTrue(getCheckBox(name), "Чекбокс '" + name + "' не выбран");
-                return this;
+    /**
+     * Проверить статус чекбокса, если он виден в блоке
+     *
+     * @param block название блока
+     * @param name  название чекбокса
+     * @return true - чекбокс установлен, false - чекбокс не виден или не установлен
+     */
+    public boolean getCheckBoxIfPresent(String block, String name) {
+        waitVisio(filter);
+        for (WebElement we : filterBlocks) {
+            if (!we.getText().contains(block)) continue;
+            try {
+                return we.findElement(By.xpath(format(checkBoxStatus, name))).isSelected();
+            } catch (NoSuchElementException ex) {
+                return false;
             }
         }
-        Assertions.fail("Отсутствует чекбокс '" + name + "'");
-        return this;
-    }
-
-    public boolean getCheckBox(String name) {
-        waitVisio(allFilters);
-        for (WebElement we : chekBoxList) {
-            return waitVisio(we, checkBoxStatus).isSelected();
-        }
-        Assertions.fail("Отсутствует чекбокс '" + name + "'");
+        Assertions.fail("Отсутствует блок '" + block + "' в фильтре");
         return false;
     }
 
 
     public SearchResultPage setSwitchBox(String name) {
-        waitVisio(allFilters);
-        for (WebElement we : switchBoxList) {
+        waitVisio(filter);
+        for (WebElement we : filterBlocks) {
             if (!we.getText().contains(name)) continue;
-            if (!getSwitchBox(name)) waitVisio(we, switchBoxClick).click();
+            if (!getSwitchBox(name)) we.findElement(switchBoxClick).click();
             {
                 Assertions.assertTrue(getSwitchBox(name), "Cвитчбокс '" + name + "' не выбран");
                 return this;
@@ -129,41 +121,43 @@ public class SearchResultPage extends BasePage {
     }
 
     public boolean getSwitchBox(String name) {
-        waitVisio(allFilters);
-        for (WebElement we : switchBoxList) {
-            return waitVisio(we, switchBoxStatus).isSelected();
+        waitVisio(filter);
+        for (WebElement we : filterBlocks) {
+            if (!we.getText().contains(name)) continue;
+            return we.findElement(switchBoxStatus).isSelected();
         }
         Assertions.fail("Отсутствует свитчбокс '" + name + "'");
         return false;
     }
 
-
-    public SearchResultPage setFieldTo(String name, String text) {
-        waitVisio(allFilters);
-        for (WebElement we : fields) {
+    public SearchResultPage setField(String name, String fromTo, String text) {
+        waitVisio(filter);
+        By by = fromTo.equals("от") ? from : to;
+        for (WebElement we : filterBlocks) {
             if (!we.getText().contains(name)) continue;
-            waitVisio(we, to).click();
-            we.findElement(to).sendKeys(Keys.chord(Keys.CONTROL, "a"), text, Keys.ENTER);
-            Assertions.assertEquals(text, getFieldTo(name), "Неверно значение поля '" + name + "' от");
+            we.findElement(by).click();
+            we.findElement(by).sendKeys(Keys.chord(Keys.CONTROL, "a"), text, Keys.ENTER);
+            Assertions.assertEquals(text, getField(name, fromTo), "Неверно значение поля '" + name + "' " + fromTo);
             return this;
         }
-        Assertions.fail("Отсутствует  поле '" + name + "' от");
+        Assertions.fail("Отсутствует  поле '" + name + "' " + fromTo);
         return this;
     }
 
-    public String getFieldTo(String name) {
-        waitVisio(allFilters);
-        for (WebElement we : fields) {
+    public String getField(String name, String fromTo) {
+        waitVisio(filter);
+        By by = fromTo.equals("от") ? from : to;
+        for (WebElement we : filterBlocks) {
             if (!we.getText().contains(name)) continue;
-            return waitVisio(we, to).getAttribute("value").replaceAll("\\D", "");
+            return we.findElement(by).getAttribute("value").replaceAll("\\D", "");
         }
-        Assertions.fail("Отсутствует поле '" + name + "' от");
+        Assertions.fail("Отсутствует поле '" + name + "' " + fromTo);
         return "";
     }
 
 
     public boolean addToBasket(WebElement we) {
-        waitVisio(we);
+        waitVisio(container);
         String countBefore = getBasketIconCount();
         if (!isPresentThenClick(we, toBasket)) return false;
         waitUntilBasketIconCountChange(countBefore);
@@ -173,19 +167,17 @@ public class SearchResultPage extends BasePage {
         return true;
     }
 
-    public SearchResultPage addAllProductsToBasket(boolean even, boolean odd) {
-        return addProductsToBasket(-1, even, odd);
-    }
-
     /**
-     * @param quantity ограничение по количеству добавляемых продуктов, -1 - без ограничения
-     * @param even     добавлять четные продукты
-     * @param odd      добавлять нечетные продукты
+     * Добавить в корзину товары из списка выдачи
+     *
+     * @param quantity ограничение по количеству добавляемых товаров, -1 - без ограничения
+     * @param even     добавлять четные в списке
+     * @param odd      добавлять нечетные в списке
      * @return экземпляр этой страницы
      */
     public SearchResultPage addProductsToBasket(int quantity, boolean even, boolean odd) {
         do {
-            waitVisio(driver.findElement(containerResults));
+            waitVisio(container);
             for (int i = 0; i < products.size(); i++) {
                 if ((i + 1) % 2 != 0 && !odd) continue; //нечетное пропускаем
                 if ((i + 1) % 2 == 0 && !even) continue; //четное пропускаем
