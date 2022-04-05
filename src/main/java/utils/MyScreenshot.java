@@ -4,7 +4,7 @@ import io.cucumber.plugin.event.EventPublisher;
 import io.cucumber.plugin.event.TestStepFinished;
 import io.qameta.allure.Allure;
 import io.qameta.allure.cucumber5jvm.AllureCucumber5Jvm;
-import managers.DriverManager;
+import managers.DriversManager;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 
@@ -22,7 +22,7 @@ public class MyScreenshot extends AllureCucumber5Jvm {
                 testStepFinished -> {
                     if (testStepFinished.getResult().getStatus().is(FAILED)) {
                         Allure.getLifecycle().addAttachment("screenshot", "image/png", ".png",
-                                ((TakesScreenshot) DriverManager.getInstance()).getScreenshotAs(OutputType.BYTES));
+                                ((TakesScreenshot) DriversManager.getInstance()).getScreenshotAs(OutputType.BYTES));
                     }
                 });
 

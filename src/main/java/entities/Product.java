@@ -1,13 +1,9 @@
 package entities;
 
 import io.qameta.allure.Allure;
-import io.qameta.allure.Attachment;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import managers.DriverManager;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

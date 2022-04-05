@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Sergey Nesterov
  */
-public class DriverManager {
+public class DriversManager {
     private static WebDriver driver;
     private static final PropertiesManager properties = PropertiesManager.getInstance();
 
@@ -65,7 +65,7 @@ public class DriverManager {
 
         try {
             RemoteWebDriver driver = new RemoteWebDriver(
-                    URI.create("http://51.250.100.60:4444/wd/hub").toURL(),
+                    URI.create("yourHost").toURL(),
                     capabilities
             );
         } catch (MalformedURLException e) {
