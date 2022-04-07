@@ -3,6 +3,7 @@ package pages;
 import managers.DriversManager;
 import managers.PagesManager;
 import managers.PropertiesManager;
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
