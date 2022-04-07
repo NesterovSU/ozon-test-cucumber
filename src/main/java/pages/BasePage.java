@@ -85,6 +85,7 @@ public class BasePage {
                 mySleep(100);
             }
         } while (--timeout > 0);
+        Assertions.fail("Элемент не обновился");
         return we;
     }
 
