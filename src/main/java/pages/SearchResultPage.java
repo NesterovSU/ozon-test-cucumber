@@ -34,7 +34,7 @@ public class SearchResultPage extends BasePage {
     private String checkBoxStatus = ".//*[contains(text(),'%s')]/../../input",
             checkBoxClick = ".//*[contains(text(),'%s')]/../../div[1]";
 
-    @FindBy(xpath = "//*[contains(text(),'Не нашли, что искали?')]")
+    @FindBy(xpath = "//*[contains(@class,'widget-search-result-container')]")
     private WebElement container;
 
     @FindBy(xpath = "//*[@data-widget='searchResultsFilters']")
